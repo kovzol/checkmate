@@ -470,6 +470,23 @@ move_done = False
 step = 1
 game = ""
 
+opening = { # https://www.shredderchess.com/online/opening-database.html
+ "1. e4": [2, 6, 2, 4], # c5
+ "1. d4": [6, 7, 5, 5], # Nf6
+ "1. Nf3": [6, 7, 5, 5], # Nf6
+ "1. c4": [6, 7, 5, 5], # Nf6
+ "1. g3": [3, 6, 3, 4], # d5
+ "1. b3": [4, 6, 4, 4], # e5
+ "1. f4": [3, 6, 3, 4], # d5
+ "1. Nc3": [2, 6, 2, 4], # c5
+ "1. e4 c5 2. Nf3": [3, 6, 3, 5], # d6
+ "1. e4 c5 2. c3": [6, 7, 5, 5], # Nf6
+ "1. e4 c5 2. Nc3": [1, 7, 2, 5], # Nc6
+ "1. d4 Nf6 2. c4": [4, 6, 4, 5], # e6
+ "1. d4 Nf6 2. Nf3": [6, 6, 6, 5], # g6
+ "1. d4 Nf6 2. Bg5": [5, 5, 4, 3] # Ne4
+ }
+
 while running:
 
     events = pygame.event.get()
@@ -534,12 +551,19 @@ while running:
             wins("white")
 
         beginning = datetime.datetime.now()
-        move_chosen = computers_move(from_possible, to_possible)
+        move = 0
+        if step <= 2: # use the opening database at start
+            move = opening.get(game.rstrip(), 0)
+        if move == 0:
+            move_chosen = computers_move(from_possible, to_possible)
+            computer_to = to_possible[move_chosen]
+            computer_from = from_possible[move_chosen]
+        else:
+            computer_from = move[0:2]
+            computer_to = move[2:4]
         ending = datetime.datetime.now()
         print ("Computation time for the Black's move:", (ending-beginning))
 
-        computer_to = to_possible[move_chosen]
-        computer_from = from_possible[move_chosen]
         # Computer performs its move:
         fromx = computer_from[0]
         fromy = computer_from[1]
