@@ -397,18 +397,18 @@ def perform_move(fromx, fromy, tox, toy):
         }
 
     target_figure = b[tox][toy]
-    # Ez le lesz véve:
+    # This will be captured:
     board_value -= values.get(target_figure, 0)
 
     v.append([tox,toy,target_figure]) # store the target figure in the list
     b[tox][toy] = b[fromx][fromy]
     v.append([fromx,fromy,b[fromx][fromy]]) # store the source figure in the list
     b[fromx][fromy] = 0
-    # handle promotion of White's pawn (it will be queen)
+    # handle promotion of White's pawn (it will be a queen)
     if b[tox][toy] == 6 and toy == 7:
         b[tox][toy] = 2
         board_value -= 8
-    # handle promotion of Black's pawn (it will be queen)
+    # handle promotion of Black's pawn (it will be a queen)
     if b[tox][toy] == 16 and toy == 0:
         b[tox][toy] = 12
         board_value += 8
@@ -482,6 +482,7 @@ opening = { # https://www.shredderchess.com/online/opening-database.html
  "1. e4 c5 2. Nf3": [3, 6, 3, 5], # d6
  "1. e4 c5 2. c3": [6, 7, 5, 5], # Nf6
  "1. e4 c5 2. Nc3": [1, 7, 2, 5], # Nc6
+ "1. e4 c5 2. Bc4": [4, 6, 4, 5], # e6
  "1. d4 Nf6 2. c4": [4, 6, 4, 5], # e6
  "1. d4 Nf6 2. Nf3": [6, 6, 6, 5], # g6
  "1. d4 Nf6 2. Bg5": [5, 5, 4, 3] # Ne4
