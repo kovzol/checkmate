@@ -20,6 +20,7 @@ Credits:
 
   * http://www.clanb2k.com/cstrike12/sound/zombie_plague/survivor1.wav
   * https://www.youtube.com/user/LibraryDealer/about
+  * https://www.youtube.com/watch?v=cGUoXxuGWiY
 
 Bugs:
 
