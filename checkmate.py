@@ -155,8 +155,8 @@ def black(column, row):
     return b[int(column)][int(row)] >= 10
 
 def white(column, row):
-    ez = b[int(column)][int(row)]
-    return ez >= 1 and ez <= 6
+    fig = b[int(column)][int(row)]
+    return fig >= 1 and fig <= 6
 
 def opposite(column, row, p):
     if p == 0: # search for White's opposite's figures
