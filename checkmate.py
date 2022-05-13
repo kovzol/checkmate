@@ -425,45 +425,38 @@ def undo(undoinfo):
         else:
             board_value = i[0]
 
-def computers_move(from_possible, to_possible):
+def evaluate_move(player, from_possible, to_possible, steps):
     global board_value;
     number = len(to_possible)
-    best_board_value = -2000 # initial value, we expect a better board value (maximinimax)
+    best_board_value = -2000 # initial value for Black, we expect a better board value (minimax)
+    if player == 0:
+        best_board_value = 2000 # computation for White (maximin)
     best_move = 0 # if there is no other possibility, use first possible move
     for move in range(number):
         attempt_from = from_possible[move]
         attempt_to = to_possible[move]
-        undoinfo = perform_move(attempt_from[0], attempt_from[1], attempt_to[0], attempt_to[1]) # Black's planned move
-        # Check White's possible answers...
-        white_best_answer = 2000 # initial value, we expect a worse board value (minimax)
-        for i in range(8):
-            for j in range(8):
-                if white(i,j):
-                    to_possible2 = to_move_but_not_in_check(i,j)
-                    for move2 in to_possible2:
-                        undoinfo2 = perform_move(i,j,move2[0],move2[1])
-                        # Check Black's possible answers...
-                        black_best_response = -2000 # initial value, we expect a better board value (max)
-                        for i2 in range(8):
-                            for j2 in range(8):
-                                if black(i2,j2):
-                                    to_possible3 = to_move_but_not_in_check(i2,j2)
-                                    for move3 in to_possible3:
-                                        undoinfo3 = perform_move(i2,j2,move3[0],move3[1])
-                                        if board_value > black_best_response:
-                                            black_best_response = board_value
-                                        undo(undoinfo3)
-                        if black_best_response < white_best_answer:
-                            white_best_answer = black_best_response
-                        undo(undoinfo2)
-        if white_best_answer > best_board_value:
-            best_board_value = white_best_answer
-            best_move = move
-        if white_best_answer == best_board_value and random.randint(1,6) <= 1: # some randomization
-            best_move = move
+        undoinfo = perform_move(attempt_from[0], attempt_from[1], attempt_to[0], attempt_to[1])
+        if steps > 1:
+            from_possible2 = []
+            to_possible2 = []
+            for i in range(8):
+                for j in range(8):
+                    if opposite(i,j,player):
+                        currently_possible = to_move_but_not_in_check(i,j)
+                        for k in currently_possible:
+                            from_possible2.append([i,j])
+                            to_possible2.append(k)
+            best_computed_board_value, best_computed_move = evaluate_move(1-player, from_possible2, to_possible2, steps-1)
+        else:
+            best_computed_board_value = board_value
+            best_computed_move = move
         undo(undoinfo)
-    return best_move
-
+        if (((best_computed_board_value == best_board_value) and (random.randint(1,6) == 1))
+            or ((player == 0) and (best_computed_board_value < best_board_value)) or
+            ((player == 1) and (best_computed_board_value > best_board_value))):
+            best_board_value = best_computed_board_value
+            best_move = move
+    return [best_board_value, best_move]
 
 selected = False
 move_done = False
@@ -556,7 +549,7 @@ while running:
         if step <= 2: # use the opening database at start
             move = opening.get(game.rstrip(), 0)
         if move == 0:
-            move_chosen = computers_move(from_possible, to_possible)
+            best_value_chosen, move_chosen = evaluate_move(1, from_possible, to_possible, 3)
             computer_to = to_possible[move_chosen]
             computer_from = from_possible[move_chosen]
         else:
